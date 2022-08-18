@@ -1,0 +1,712 @@
+---
+title: "module3_wrapup&intro to tidy"
+author: "Emily Goldberg"
+date: "2022-08-11"
+output: html_document
+---
+
+# Review
+
+Thus far in this workshop, you have: become familiar with the R-Studio layout; created a project; imported .csv files into the R environment; learned about the utility of R-Studio; and began training in exploratory data analysis.
+
+Before diving in to the wonderful world of data tidying, let's practice some of the skills that you have learned over the past few days. Work through the following steps, and then we will review the solutions together:
+
+**Exercise 1: Install the "tidyverse" package.**
+
+```{r, eval = FALSE}
+install.packages("tidyverse")
+```
+
+*Note that you only need to install packages once. For example, if you've already installed the tidyverse package, you don't need to re-install it again*
+
+Exercise 2: Load the libraries. I will load "here":
+
+```{r}
+library(here)
+```
+
+Now you load the tidyverse library:
+
+```{r}
+## INSERT CODE HERE
+```
+
+
+
+
+
+
+
+**Answer:**
+
+
+```{r}
+library(tidyverse)
+```
+
+
+
+Step 3: Load in the data. I am going to load in the "hearingLoss.csv" data set below:
+
+```{r}
+hearingLoss <- read.csv(here("data", "hearingLoss.csv"))
+```
+
+Now, you practice loading the "aphasia_naming" data set:
+
+```{r}
+## INSERT CODE HERE
+```
+
+
+
+
+
+
+
+
+**Answer:**
+
+
+```{r}
+aphasia_naming <- read.csv(here("data", "aphasia_naming.csv"))
+```
+
+
+Step 5: Using the "summary()" function that Alex taught us yesterday, I am going to generate a summary report for the hearingLoss data frame below:
+
+```{r}
+summary(hearingLoss)
+```
+
+Now, you generate a summary report for the aphasia_naming data set:
+
+```{r}
+## INSERT CODE HERE
+```
+
+
+**Answer:**
+
+
+```{r}
+summary(aphasia_naming)
+```
+
+Step 6: Below I am going to generate a histogram of the pure tone average across both ears (pta_) information from the hearingLoss data frame:
+
+```{r}
+ggplot(data = hearingLoss, aes(x=pta)) + 
+  geom_histogram()
+```
+
+Now, you create a histogram of the average months post stroke onset (months_post) from the aphasia_naming data frame:
+
+```{r}
+## INSERT CODE HERE
+```
+
+
+**Answer:**
+
+
+
+
+```{r}
+ggplot(data = aphasia_naming, aes(x=months_post)) + 
+  geom_histogram()
+```
+
+Tip (optional, read on your own): Sometimes the default settings for a ggplot histogram aren't ideal. Here, the default bin is not really representing the data as we might want it to. There is an argument that we can use to improve this below: 
+
+```{r}
+ggplot(data = aphasia_naming, aes(x=months_post)) + 
+  geom_histogram() + stat_bin(bins = 8)
+```
+
+
+END REVIEW PRACTICE.
+
+
+
+
+
+
+# Data Transformation, Tidying, and Wrangling
+
+## Why do we care?
+
+Before analyzing a data set to address your research question(s), it is more likely than not that you will need to dedicate time to "cleaning up" your data. Data often comes to us in raw and messy forms, and knowing how to use R to wrangle the data will be a useful skill as you become familiar with R and analyses as a whole. It may be tempting to transform, tidy, and wrangle your data manually; for example, you may think to use Microsoft Excel to create new columns, replace values, and modify spelling errors "by hand." However, we don't advise using this manual approach for a few reasons. First, manual work always introduces more risk for human error, and identifying when and where errors occur during redundant manual cleansing is a challenge that can set you back in your progress; second, keeping a record of what you have done to your data and why is an important part of documentation for the purpose of replicability, as well as to monitor your progress on a project. Anecdotally, the cleansing process sometimes takes more time and lines of code than the analyses themselves; but the payoff is worth the effort.
+
+
+## Tutorial Objectives
+
+1.  Attendees will understand the value in pre-processing data using R, instead of manually cleansing and tidying in other applications (e.g. Excel).
+
+2. Attendees will implement R coding skills acquired from the previous several days of the workshop, including importing data, creating new code chunks, using the "assign" character, etc. 
+
+3.  Attendees will be able to list examples of errors and architectural flaws that may exist within a given raw data set, reason why those errors/flaws may be detrimental to the analytic process, and generate solutions for addressing them.
+
+4.  Attendees will learn how to use several commands from the tidyverse library.
+
+
+## Tidyverse
+
+"The `tidyverse` is an opinionated collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures" (tidyverse.org). The set of packages included in `tidyverse` work in harmony, because they share common data representations and application programming interface design. Overall, the tidyverse package is designed to make it easy to install and load multiple 'tidyverse' packages in a single step. In your practice you may just load the tidyverse library and proceed from there; in this tutorial, we are going to be explicitly clear about which functions originate from the specific libraries that comprise `tidyverse`. 
+
+Here is the list of packages that make up the core `tidyverse`: 
+* `ggplot2`: system for creating graphics. 
+* `dplyr`: grammar of data manipulation
+* `tidyr`: includes a set of functions that help you tidy data
+* `readr`: fast and friendly way to read rectangular data (e.g. CSV); parse many types of data
+* `purrr`: enhances R's functional programming toolkit by providing complete and consistent set of tools for working with functions and vectors
+* `tibble`: re-imagining of the data frame
+* `stringr`: cohesive set of functions designed to make working with strings easy
+* `forcats`: solve common problems with factors
+
+To read more: <https://www.tidyverse.org/packages/>
+
+
+## Pipe Operator
+
+In the last two days, you learned about many different operators that can be used in R (e.g. assignment operator etc.). 
+
+```{r}
+a <- 3
+## a = 3
+b <- 4
+## b = 4
+```
+
+
+There is another operator not yet discussed that plays a really important role in data tidying, and can be used for plotting and other data-focused aims. This operator is called the **pipe**, which looks like `%>%`. The way you can think of the pipe is to send something to a function. 
+
+As we move forward in this module, you will see many examples of the pipe symbol and will use it yourself!
+
+Run the code below to assign this list of values to the object "list1"
+```{r}
+numbers <- c(1, 5, 9, 12, 15, 4)
+```
+
+Up until today, if we wanted to get the summary of something we may have used this syntax:
+```{r}
+summary(numbers)
+```
+
+With the pipe symbol, things look a little different. You take the thing you're interested in doing something with and "pipe it" to the function you're looking to do:
+
+```{r}
+numbers %>%
+  summary()
+```
+
+
+
+## Changing Variable Types
+
+Let's take a string of numbers and convert them from characters (sometimes this can happen by accident) to numeric:
+
+```{r}
+string <- c("-0.1", " 2.7 ", "3")
+```
+
+Let's try generating a summary of "string":
+```{r}
+string %>%
+  summary()
+```
+
+Uh oh! What is the problem?
+
+Here's how to solve it - we need to change string to be numeric:
+
+```{r}
+## base R - no additional library needed
+string_numeric <- as.numeric(string)
+```
+
+
+Generate a summary now: 
+
+```{r}
+string_numeric %>%
+  summary()
+```
+
+
+
+
+## Data Transformation
+
+Rarely do you receive a set of data in a ready-to-analyze state. For example you might need to create new variables, rename or reorder variables to make it easier to work with. Many of the functions important for data transformation are a part of the `dplyr()` package, which loads when you load the `tidyverse()` package.
+
+We will practice specific functions from the mega library `tidyverse` as it pertains to data transformation using several existing data sets. R has many freely accessible data sets that can be used to practice your R coding skills.
+
+There are four key `dplyr` (part of tidyverse) functions that we are going to learn in our Data Transformation section: 
+
+* `filter()` - allows you to pick observations by their values
+* `select()` - allows you to choose variables by names
+
+If time and bandwidth permits: 
+
+* `mutate()` - allows you to create a new variable with functions of existing variables
+* `summarise()` - allows you to collapse values down to a summary
+
+Each of these commands have their own documentation to help you with syntax and troubleshooting. For example: 
+
+* `filter()` - https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter
+* `select()` - https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/select
+* `mutate()` - https://www.rdocumentation.org/packages/dplyr/versions/0.5.0/topics/mutate
+* `summarise()` - https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/summarise
+
+
+
+### Filter
+
+This function will allow you to filter observations based on their values within a given variable. Below, I filter the hearingLoss data so that I only have observations where the left PTA value is greater than or equal to 15.
+
+```{r}
+## library(dplyr) ## filter
+## library(magrittr) ## %>%
+
+hearingLoss_lpta_15 <- hearingLoss %>%
+  filter(lpta >= 15)
+```
+
+Here I have: 
+
+* assigned the filtered data to a new object (THIS IS KEY. If you don't assign to a new object, you can't use that filtered object for further shaping)
+* taken the hearingLoss data frame
+* piped it to the filter function
+* specified that I want to filter to include only observations where lpta >= 15. 
+
+
+Create a new data frame named "aphasia_list1" that filters aphasia_naming so that you only include observations where List is equal to 1:
+
+```{r}
+## INSERT CODE HERE
+```
+
+
+
+**Answer:**
+
+
+```{r}
+aphasia_list1 <- aphasia_naming %>%
+  filter(List == 1)
+```
+
+
+
+Next I am going to look at the observations where subjects did NOT use a hearing aid:
+
+```{r}
+hearingLoss_no_HA <- hearingLoss %>%
+  filter(HearingAidUse != 1)
+```
+
+
+Now, create a new data frame called "aphasia_without4" where you filter for  observations that are NOT probe number 4:
+
+```{r}
+## INSERT CODE HERE
+```
+
+
+
+
+
+
+
+
+**Answer:**
+
+
+```{r}
+aphasia_without4 <- aphasia_naming %>%
+  filter(probe_number != 4)
+```
+
+END FILTER - break out to check in about pipe if needed.
+
+
+
+### Select
+
+Sometimes you may be working with a data set that contains hundreds or thousands of columns/variables (yikes), when you only really need a some of them. In this situation you can use the `select()` function to focus on the variables that you are actually interested in using. 
+
+For example, perhaps in the hearingLoss data frame I only want ID, age, hearing aid use, pta, and hl_mild:
+
+
+```{r}
+hearingLoss_prune <- hearingLoss %>%
+  select(id, age, HearingAidUse, pta, hl_mild)
+```
+
+I made a new object called "hearingLoss_prune" that ONLY contains ID, age, hearing aid use, pta, and hl_mild.
+
+
+You select id, item, accuracy, and CAT_severity (aphasia severity), and assign it to an object called "aphasia_naming_select". 
+
+```{r}
+## INSERT CODE HERE
+```
+
+
+
+
+
+
+
+**Answer:*
+
+
+```{r}
+aphasia_naming_select <- aphasia_naming %>%
+  select(id, item, accuracy, CAT_severity)
+```
+
+
+
+
+Now we can verify that we accomplished this using `str`:
+```{r}
+str(aphasia_naming_select)
+```
+
+
+Let's create a histogram showing the distribution of the aphasia severity (CAT_severity): 
+
+```{r}
+## ggplot(data = [INSERT], aes(x=[INSERT])) + geom_histogram()
+## INSERT CODE HERE
+```
+
+
+
+
+
+
+
+
+
+
+
+**Answer:**
+
+
+```{r}
+ggplot(data = aphasia_naming_select, aes(x=CAT_severity)) + 
+  geom_histogram()
+```
+
+
+
+END SELECT - proceed if time allows
+
+
+
+
+
+### Rename
+
+You can use the `rename()` function in R to overwrite column names. For example in the `hearingLoss` data frame, I can change "HearingAidUse" to be "hearing_aid_use":
+
+```{r}
+## library(magrittr) ## %>%
+## library(dplyr) ## rename
+
+hearingLoss <- hearingLoss %>%
+  rename(hearing_aid_use = HearingAidUse) 
+
+head(hearingLoss)
+```
+
+Syntax notes: 
+
+* assign to object
+* data frame
+* pipe
+* rename function
+* desired column name
+* = 
+* existing column name
+
+
+To practice, rename "CAT_severity" to "aphasia_severity" in the aphasia_naming data frame and save it as a new data frame titled "rename_practice". 
+
+```{r}
+## INSERT CODE HERE
+```
+
+
+
+
+
+
+
+
+
+**Answer:**
+
+
+```{r}
+rename_practice <- aphasia_naming %>%
+  rename(aphasia_severity = CAT_severity) 
+
+str(rename_practice)
+```
+
+
+
+
+
+
+
+### Mutate
+
+Adding a new column that is a function of existing columns is a really important and useful tool; this is accomplished using the `mutate()` function. 
+
+When you use `mutate()`, a column will be added at the very end of the dataset. Let's first select a few columns to practice using `mutate()` with. From the aphasia_naming data frame, create a new data frame called "aphasia_mutate_practice" containing only id, item, List, Type, probe_number, accuracy, verbal_mem, visuospatial_mem, CAT_severity, and months_post - use the `select` function that we reviewed above!
+
+```{r}
+## library(magrittr) ## %>%
+## library(dplyr) ## select
+
+## INSERT CODE HERE
+```
+
+
+
+
+
+
+
+**Answer:**
+
+
+```{r}
+aphasia_mutate_practice <- aphasia_naming %>%
+  select(id, item, List, Type, probe_number, accuracy, verbal_mem, visuospatial_mem, CAT_severity, months_post)
+```
+
+
+
+It could be possible that in an analysis we will need to create a new column that draws from existing columns. For example in the hearingLoss data frame, perhaps I would like to get a sum of these values: 
+
+```{r}
+hearing_mutate_practice <- hearingLoss %>%
+  mutate(sum_pta = (lpta + rpta))
+
+str(hearing_mutate_practice)
+```
+
+
+Now you use `mutate()` to add a column titled "sum_mem", which will add together verbal_mem and visuospatial_mem. Name the new object "aphasia_mutate_practice".
+
+
+```{r}
+## INSERT CODE HERE
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+**Answer:**
+
+```{r}
+aphasia_mutate_practice <- aphasia_naming %>%
+  mutate(sum_mem = (verbal_mem + visuospatial_mem))
+
+str(aphasia_mutate_practice)
+```
+
+
+
+
+Many functions can be used when you are creating new variables with mutate, and those functions need to be vectorized (must take a vector of values as input and return a vector with same number of values as the output). 
+
+There are two specific functions that can be used **within** mutate that are really handy when you are attempting to create new variables that are conditional on other existing variables. In the example above, we created a new variable that generated new values based on a calculation. Sometimes we may need to create a new variable if a value is above, below, or equal to something specific across multiple existing columns. The two functions that come in handy are `case_when()` and `if_else()`. Although both of these functions lead to the same outcome (creating a new variable that is generated conditionally using existing columns), the syntax is different. In this workshop, we are going to introduce `if_else()`.
+
+
+Here, I am going to use the `if_else()` function WITHIN `mutate()` to create a new dichotomous classification for pure tone average. In creating my new column, I am going to enforce a cutoff such that values above 25 are considered "abnormal" and values below 25 are considered "normal". 
+
+
+
+```{r}
+
+hearing_mutate_practice2 <- hearingLoss %>%
+  mutate(
+    pta_rating = 
+      if_else(
+        pta >= 25, "abnormal", "normal"
+      )
+  )
+
+head(hearing_mutate_practice2)
+```
+
+To practice, take the "aphasia_mutate_practice" data frame that you created and create a "mem_class" variable that will classify someone based on the sum of their memory scores. Summed scores above or equal to 38 will be "normal" and summed scores below 38 will be "abnormal"
+
+
+```{r}
+## INSERT CODE HERE
+```
+
+
+
+
+
+
+
+
+
+
+**Answer:**
+
+
+```{r}
+aphasia_mutate_practice2 <- aphasia_mutate_practice %>%
+  mutate(
+    mem_class = 
+      if_else(
+        sum_mem >= 38, "normal", "abnormal"
+      )
+  )
+```
+
+
+
+
+IF TIME PERMITS
+### Changing to Factor
+
+
+Watch me run the following line of code.
+
+```{r}
+## RUN THIS
+group_example <- c("Normal", "Aphasia")
+```
+
+Responses automatically become characters, however often times we want categorical data to be factors. A factor is a variable and the easiest way to think about it is a group membership assignment. I will change "responses" to be a factor using the function `as.factor()`. 
+
+```{r}
+group_example <- as.factor(group_example)
+```
+
+Run the following line of code.
+
+```{r}
+## RUN THIS
+group <- c("hearing", "hearing-loss")
+```
+
+Change "responses" to be a factor using the function `as.factor()`. 
+
+```{r}
+## INSERT CODE
+```
+
+
+**ANSWER:** 
+
+
+```{r}
+group <- as.factor(group)
+```
+
+
+## Breakout Activity - group_by and summarise
+
+Summarize will collapse a data frame into a single row to get you some descriptive information. `summarise()` is often used in conjunction with `group_by()`. 
+
+For example, using `hearingLoss` we can generate an overall summary of the lpta by doing: 
+
+```{r}
+
+hearingLoss %>%
+  summarise(mean = mean(lpta),
+            sd = sd(lpta), 
+            median = median(lpta), 
+            min = min(lpta), 
+            max = max(lpta))
+```
+
+Using the aphasia_naming data frame, generate a summary for the months_post variable: 
+
+```{r}
+## INSERT CODE HERE
+```
+
+
+
+
+
+
+
+
+
+**Answer:**
+```{r}
+aphasia_naming %>%
+  summarise(mean = mean(months_post),
+            sd = sd(months_post), 
+            median = median(months_post), 
+            min = min(months_post), 
+            max = max(months_post))
+```
+
+
+Now, using the hearingLoss_mutate2 data frame with my classification system, I am going to generate summary information for lpta grouped by the pta classification: 
+
+```{r}
+hearing_mutate_practice2 %>% 
+  group_by(pta_rating) %>%
+  summarise(mean = mean(lpta),
+            sd = sd(lpta), 
+            median = median(lpta), 
+            min = min(lpta), 
+            max = max(lpta))
+```
+
+You try to generate summary information for months post stroke onset grouped by the mem_class rating that we created in the aphasia_mutate_practice2 data frame: 
+
+```{r}
+## INSERT CODE HERE
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**Answer:**
+```{r}
+aphasia_mutate_practice2 %>%
+  group_by(mem_class) %>%  
+  summarise(mean = mean(months_post),
+            sd = sd(months_post), 
+            median = median(months_post), 
+            min = min(months_post), 
+            max = max(months_post))
+  
+```

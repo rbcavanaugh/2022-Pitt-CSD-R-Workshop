@@ -1,0 +1,578 @@
+---
+title: "Introduction to exploratory data analysis tutorial"
+author: "Alex Swiderski"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::html_clean:
+    toc: true
+    toc_depth: 2
+    code_folding: show
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+library(here)
+```
+
+## Where we were?
+
+-   Installed R and R studio
+
+-   Hi my name is R! I am super smart, but not very nice. I love to run
+    commands that are given to me by my best friend, R Studio!
+
+    ![](images/R_logo.png){width="225" height="225"}
+
+-   Hi my name is R studio! Use me to access all the complex and not
+    user friendly underpinnings of base R!
+
+    ![](images/rstudio.png)
+
+-   What are R and R studio?
+
+    -   A computer program, just like Microsoft word or excel, that is
+        used primarily for data science purposes?
+
+    -   R alone, is not very user friendly. R studio helps you visualize
+        much of what is done by R in a more user friendly manner.
+
+-   WTH is data science?
+
+    ![](images/whatisdatascience%20-%20Copy.PNG)
+
+-   Analogy: "The Golem of Prague"
+
+    ![](images/golem-01.JPG)
+
+-   Golem is a folklore entity made from clay
+
+-   Golem is told to do a task, and takes the command for the task very
+    literally.
+
+-   R is your Golem. Your golem is SUPER smart, but can only do exactly
+    what you tell it to do.
+
+-   Learning how to talk to your Golem (R) is hard and takes time.
+
+    -   But with practice, our Golem (R) will:
+
+        -   Load your data, but only from where you tell it to find the
+            data.
+
+        -   Complete very complex tasks when told how to do them, but
+            get confused from typos and not work
+
+-   Learned about R environments (super helpful, not regularly taught.
+    Be bold!)
+
+    -   What is an environment?
+
+        -   An environment for R is like your office. The environment is
+            place where R saves files like scripts, images, and data.
+
+        -   Remember, if a file is in your desk drawer, you have to tell
+            your golem to look in the desk drawer.
+
+#### Exercise 1: We learned what a package is and how to install them
+
+-   Learned what a "package is"
+
+    -   A package is like a toolbox and includes a group of functions
+        that R uses to achieve tasks for estimating statistics, creating
+        plots, and manipulating data.
+
+    -   Analogous to an app, or program, used by your phone or computer.
+
+Learned to install packages/load packages.
+
+-   To install a package we use the function named
+    \`\``install.packages()`\`\`\`
+
+-   within the parentheses you write the name of the package you want to
+    install inside of quotation marks.
+
+Installing packages:
+
+```{r}
+#Example:
+install.packages('ggplot2')
+```
+
+### Exercise 1: install the package `dplyr` below.
+
+```{r}
+#exercise
+
+```
+
+#### Exercise 2: Loading packages
+
+-   To load a package we use the `library()` function.
+
+    -   To load a package, type the name of the package within the
+        `library()` parentheses. Unlike `install.packages()` you do not
+        need to put the name of the package within quotation marks.
+
+If it is easier to remember you can use quotes if you would like for
+both.
+
+-   Example:
+
+```{r}
+library(ggplot2)
+```
+
+Load the following libraries:
+
+-   readr
+
+-   here
+
+-   dplyr
+
+-   tidyr
+
+```{r}
+
+```
+
+#### Exercise 3: We learned how to create an object
+
+-   An object is a "thing"
+
+-   Objects can be dataframes, single numbers, lists of words, etc.
+
+-   For the sake of this course, we will not refer to a function as
+    object.
+
+    -   objects are objects and functions are functions.
+
+-   To print an object simply type its name and run the line of code.
+
+    -   Do not print full dataframes or variables within dataframes!
+        Well, you can, but it will print a lot!
+
+-   Objects can be created with `<-` or `=`
+
+    -   I like to use the equal sign and will use it today.
+
+##### Example 3.1: Create an object named a that is equal to the number 3, then print the object.
+
+```{r}
+a = 3
+#or
+a <- 3
+#print
+a
+```
+
+##### Exercise 3.2: Create an object named b that is equal to 4 and print it.
+
+```{r}
+
+```
+
+##### Exercise 4.3: Objects can be added, subtracted, squared, multiplied, and etc. The exponetial of an object achieved by using the \`\^\` followed by the number you want to exponentiate by. Prove to me that :
+
+$$
+a^2 + b^2 = c^2
+$$
+
+Make sure to print the output of both $a2 + b2$ and $c^2$. You are
+provided with the variable `c`
+
+```{r}
+c = 5
+```
+
+#### Exercise 4: We learned about `here()`
+
+-   The `here()` function alone does not load data, scripts, images, or
+    anything else. It is a helper function and requires another to load
+    data, scripts, or images.
+
+-   The here function is a tool that tells us, or my specifically our
+    Golem named R, where we are.
+
+-   In computer science jargon, where we are is called your "working
+    directory"
+
+-   By using an environment, your default working directory is the main
+    folder your environment is saved to.
+
+    -   Think of this as your office.
+
+-   By typing `here()` in a code chunk it simply tells us where we are.
+    What we put within the function is where the magic happens.
+
+    -   If `here()` tells us where we are, the first command within it
+        tells R where we want to go.
+
+##### Example 4.1: In your own words, what is the function below saying?
+
+```{r}
+here("data")
+```
+
+We are telling R where we are (i.e our working directory) and where we
+are going (data folder). Then, telling R to tell us the location back to
+us.
+
+##### Exercise 4.1 In your own words, what is the function below saying?
+
+```{r}
+here("scripts")
+```
+
+##### Example 4.2 The following command is similar, in our case, the second command within here() tells us what to look for in the place we told R to go.
+
+```{r}
+here("data", "hearingLoss.csv") 
+```
+
+We are telling R where we are (i.e our working directory), then where we
+want it to go, and then what we want it to find. Then, telling R to tell
+us the location and file back to us.
+
+##### Exercise 4.2: In your own words, what is the function below saying?
+
+```{r}
+here("scripts", "01_eda tutorial.Rmd")
+```
+
+#### Exercise 5: We learned how to load data
+
+With the help of function `here()` we can use the function `read.csv()`
+to load data.
+
+-   `here()`\` will go within the function `read.csv()`
+
+##### Example 5.1: Load the penguins.csv data set, which is within the folder "data, and name"penguins"
+
+-   Hint 1: Don't forget to tell the golem where to look.
+
+-   Hint 2: Although we know that the name of the data set is penguins,
+    our golem, needs to know that the dataset is a .csv file.
+
+```{r}
+penguins = read.csv(here("data", "penguins.csv"))
+df = read.csv(here("data", "hearingLoss.csv"))
+
+```
+
+##### Exercise 5.1: Load the data set "hearingLoss.csv" and name it "df"
+
+```{r}
+
+```
+
+## FEW! That was a lot to cover. To the future!
+
+### To the future, exploratory data analysis:
+
+Exploratory data analysis is the first step in most research projects.
+Generally, exploratory data analysis, or EDA, is a task that
+statisticians, data scientists, and researchers complete to visualize
+their data graphically or tabular to help:
+
+1.  Gain a basic understanding of the central tendencies of your
+    variables
+
+2.  Explore the relationships between variable
+
+3.  Generate and answer questions about your data
+
+### The easiest way to develop an EDA pipeline is to utilize a series of questions to use as tools to guide your investigation. These questions should help focus your attention on certain aspects of your data, and ultimately help you decide what types of tables, graphs, and statistical models to make.
+
+1.  What is the variation of my variables
+
+2.  What is the covariation between my variables
+
+### A quick example:
+
+# LET'S GET IT!
+
+\- Summarize tabular data
+
+\- Visualize variation of single variables
+
+\- Visualize covariation of multiple variables
+
+\- Lots of coding
+
+#### The below code is used to format the data we will look at today. Please run it. If success you will see an output of "data manipulated successfully"
+
+```{r}
+df = df %>%
+  mutate(id = as.factor(id),
+         sex = as.factor(sex),
+         HearingAidUse = as.factor(HearingAidUse),
+         hl_mild = as.factor(hl_mild),
+         hl_mod = as.factor(hl_mod),
+         NIH_mod = as.factor(NIH_mod),
+         NIH_severe = as.factor(NIH_severe),
+         sr_hl = as.factor(sr_hl),
+         sr_hl2 = as.factor(sr_hl2)) %>%
+  select(-X)
+
+df_long = df %>%
+  select(id, age, sex,  lpta, rpta) %>%
+  gather(ear, pta, lpta:rpta) %>%
+  mutate(ear = ifelse(ear == "lpta", "Left Ear", "Right Ear"))
+
+print("data manipulated succesfully")
+```
+
+#### Exercise 6: `str`
+
+-   `str` is used to tell us the structure of our data.
+
+##### Example 6: str of penguins
+
+```{r}
+str(penguins)
+
+```
+
+##### Exercise 6: print the structure of `df`. How many observations are there? How many variables?
+
+#### Exercise 7: `summary()`
+
+-   The summary function is used to estimate basic summary statistics
+    from your dataframe.
+
+##### Example: 7: Generate summary statistics for all variables from penguins
+
+```{r}
+summary(penguins)
+
+```
+
+##### Exercise: 7: Generate summary statistics for all variables from df
+
+```{r}
+
+```
+
+##### 7.1.1 Using the output from summary, identify and report the mean age of the participants in the
+
+##### 7.1.1 solution:
+
+##### Generate summary statistics of single variables within a dataset.
+
+-   hint: we use the \$ operator following the dataset name to access a
+    specific variable.
+
+##### Example 7.1.2 : Generate summary for beak length from the penguins dataset
+
+```{r}
+summary(penguins$bill_length_mm)
+```
+
+##### Exercise 7.1.2: Generate summary statistics for left pure tone average from the df dataset. The variable is labeled `lpta`
+
+```{r}
+
+```
+
+#### Onto visualization:
+
+## Onto visualization.
+
+### Univariate visualizations:
+
+> There are many ways to visualize data in R. Including the base R
+> functions and ggplot2 (gg = grammar of graphics). In this workshop we
+> will rely heavily on the ggplot2 package because of its ability to
+> generate high resolution images that are publication ready.
+
+#### Ogres are like onions, they come in layers. ggplots are like ogres, they also come in layers.
+
+> When generating plots within the ggplot framework it will be helpful
+> to remember that each time you use the + sign, you are adding a new
+> layer to the figure.
+
+> The first line of code when creating a figure in ggplot2 is
+> `ggplot()`. The first argument that must me met within this function
+> is telling ggplot where the data is coming from.
+
+##### Excercise 8: Fill in in the blank of the function below and run the command to generate the ggplot template for most figures. This will look like a white piece of paper, a perfect starting point for our figures. Make sure to remove the hash prior to ggplot()
+
+##### Example: Create base ggplot() with penguins dataset
+
+```{r}
+ggplot(data = penguins)
+
+```
+
+##### Exercise 8: Create base ggplot() with penguins dataset
+
+#### `ggplot(data, aes())`
+
+> The second argument within the `ggplot()` command is `aes()`. aes
+> stands for aesthetics and is a function itself. Within the aes section
+> you can define you x and y variables. - `aes()` follows a `,` after
+> the data's name - `aes()` is nested within both of the parentheses
+> corresponding to the `ggplot()` function. - variable names within aes
+> do not require the dataframes name followed by the dollar sign because
+> you have already told ggplot the name of the data set. - declare x and
+> y variables within the aesthetic function like this: aes(x =
+> NameOfVariable, y = NameOfVariable)
+
+#### Use `aes()` within the `ggplot()` command to declare `age` as the x axis variable.
+
+#### Example 8: Use ggplot command to declare beak length of x axis variable in penguins dataset
+
+-   Hint: Make sure you have the same number of closing parentheses as
+    opening.
+
+```{r}
+ggplot(data = penguins, aes(x = bill_length_mm))
+```
+
+#### 
+
+#### Example 9: Use `aes()` within the `ggplot()` command to declare `age` as the x axis variable from dataset df.
+
+```{r}
+ggplot(data = penguins, aes(x = bill_length_mm)) 
+```
+
+##### What do you see? What did the additional layer add to the figure?
+
+> After declaring your data and the variables of interest within ggplot,
+> as done above and provided in solution 8, we can tell ggplot what type
+> of plot we want to produce. Nearly always, if not always, this command
+> will start with `geom_` and following the underscore will by the type
+> plot you want to make. - these commands follow the root ggplot command
+> above following a \`\`\`+\`\`\`\` sign. It is good practice to hit
+> return after the plus sign.
+
+> The histogram. A histogram is a popular and useful figure for
+> identifying the type of distribution your variables are. the command.
+> the command to generate a histogram is\
+> `geom_histogram()`. You can also use the function `geom_bar()`
+
+-   You do not need to write the variable name within geom_point()
+    because you have already told ggplot both the data's name and the
+    variable of interest.
+
+##### 
+
+##### Example 9: Using dataframe penguins, Add the geom_histogram function to the above code to generate a histogram for bill length
+
+```{r}
+ggplot(data = penguins, aes(x = bill_length_mm)) +
+  geom_histogram()
+```
+
+##### Exercise 9: Using dataframe penguins, Add the geom_histogram function to the above code to generate a histogram for age.
+
+```{r}
+
+```
+
+# PAUSE: BREAK OUT?
+
+```{r}
+
+```
+
+##### 10.1: Add a title to your plot and axes, be short and descriptive, for example "Histogram of age". To add a title we add another layer to the ggplot using the \`\``labs()` command.
+
+##### Example 10: Penguins bill length
+
+```{r}
+ggplot(data = penguins, aes(x = bill_length_mm)) +
+  geom_histogram() +
+  labs(title = "Histogram of Penguin bill length (mm)",
+       x = "Bill Length",
+       y = "Count")
+```
+
+##### Exercise 10: Now with lfpta
+
+```{r}
+
+```
+
+# Break out?
+
+#### Plotting two variables:
+
+To create multivariate plots we will use the geom_point function first.
+To add a second variable, we just need to add a y = within our aes()
+block within our first ggplot call.
+
+##### Example 11 Scatterplot:
+
+```{r}
+ggplot(data = df, aes(x = rpta, y = lpta)) +
+  geom_point() +
+  labs(title = "Scatterplot: L/R puretones",
+       x = "Right pure tone",
+       y= "Left pure tone")
+```
+
+##### Exercise 11: Create a scatterplot comparing average puretone average (`pta`) and `age.` Don't forget to label your axes and add a simple title.
+
+```{r}
+
+```
+
+#### Adding a third dimension to your scatterplot.
+
+To add a third dimension to a scatterplot we can add a color or shape
+command to dilneate a categorical variable.
+
+##### Example 12: Below, I will create a scatterplot comparing l/r puretone average also including sex.
+
+```{r}
+ggplot(data = df, aes(x = rpta, y = lpta, color = sex)) +
+  geom_point() +
+  labs(title = "Scatterplot: L/R puretones",
+       x = "Right pure tone",
+       y= "Left pure tone")
+```
+
+##### Exercise 12: Create a scatterplot comparing average puretone average (`pta`) and `age.` Add a color variable to delineate sex. Don't forget to label your axes and add a simple title.
+
+```{r}
+
+```
+
+#### Adding trend lines with geom_smooth()
+
+##### Example 13: Create a scatter plot with trend lines. Note, we are not including sex right now. Make sure to add the command `method=lm` within your `geom_smooth()` .
+
+-   x = pta, y = win
+
+```{r}
+ggplot(data = df, aes(x = pta, y = win)) +
+  geom_point() +
+  geom_smooth(method = lm)
+```
+
+##### Exercise 13: Create a scatter plot comparing average puretone average (`pta`) and `age.` Add a linear trend line.
+
+#### Adding trend lines for a categorical variable:
+
+##### Example 13: Create a scatter plot with trend lines. Note, we are not including sex right now. Make sure to add the command `method=lm` within your `geom_smooth()` . Add trendlines by color for the variable sex.
+
+```{r}
+ggplot(data = df, aes(x = pta, y = win)) +
+
+  geom_point() +
+
+  geom_smooth(aes(color = sex), method = lm)
+
+
+```
+
+##### Exercise 14: Create an identical plot as you did in exercise 13, but this time add an aes() within geom_smooth and specify the color for hearing aid users.
+
+```{r}
+
+```

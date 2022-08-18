@@ -1,0 +1,259 @@
+---
+title: "Rmarkdown exercise - putting it all together"
+author: "rob"
+date: "`r Sys.Date()`"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+For this exercise, we're going to put everything (exploratory data
+analysis, visualization, and wrangling) together.
+
+Part 1 will include some specific tasks you will be asked to complete as
+a group.
+
+Part 2 will ask you to select an aspect of the data that you find
+interesting (a question you have about the data, perhaps) and report on
+this question using summary statistics and data visualization.
+
+## Data
+
+The data we're going to be exploring is treatment data from 20
+individuals who received Sound Production Treatment for Post-stroke
+Apraxia of Speech from Julie Wambaugh and colleagues (2017).
+
+Here's a quick summary of the experimenal design, exerpted from a recent
+preprint:
+
+> Wambaugh et al., (2017) reported the effects of Sound Production
+> Treatment for apraxia of speech and aphasia for 20 individuals in a
+> multiple-baseline design under two experimental conditions: blocked
+> and random practice. Sound Production Treatment uses "therapeutic
+> techniques of modeling and repetition, contrastive practice,
+> orthographic cueing, integral stimulation, and articulatory cueing" in
+> a "response-contingent hierarchy" to target phoneme production (p.
+> 1744). The expectation is that repeated practice based on principles
+> of motor learning will improve the production of target phonemes in
+> the treated context, and (ideally) generalize to the production of
+> those phonemes in words that are not explicitly treated.
+
+> In Wambaugh et al., (2017), participants received treatment on two
+> lists, one in each experimental condition (random and blocked). Each
+> list contained treated items and untreated generalization items for
+> two target phonemes. Items consisted of a single word or occasionally
+> a 2-3 word phrase. For 16/20 participants, treated lists contained 20
+> items (10 for each phoneme), and untreated lists contained 10 items (5
+> for each phoneme). For these participants, accuracy was determined
+> based on the production of the target phoneme within the item. For
+> 4/20 participants, treated lists contained 10 items (5 for each
+> phoneme), and untreated lists contained 6 items (3 for each phoneme).
+> For these participants, accuracy was determined based on the
+> production of the entire item (see Wambaugh et al., 2016 for details
+> on these four participants). All items were probed in a
+> multiple-baseline crossover design with at least 5 baseline
+> observations. For participants with 20-item treatment lists, accuracy
+> was determined based on the production of the target phoneme within
+> the item. For participants with 10-item treatment lists, the entire
+> item was scored (see Wambaugh et al., 2016 for details on these four
+> participants).
+
+| Variable    | Description                                                   |
+|:---------------|:-------------------------------------------------------|
+| participant | de-identified participant ID                                  |
+| condition   | probe schedule (blocked or random)                            |
+| phoneme     | target_phoneme                                                |
+| itemType    | item condition (treatment or generalization)                  |
+| phase       | treatment phase                                               |
+| session     | session number from Wambaugh 2017                             |
+| item        | item identifier                                               |
+| trials      | number of items in the list (per phoneme)                     |
+| spt2017     | phase used to calcualte effect sizes in Wambaugh et al., 2017 |
+| response    | accuracy of participant response                              |
+| n_baselines | Number of baseline sessions                                   |
+
+: Table 1. Variables and descriptions for study data from Wambaugh et
+al., (2017)
+
+## Setup
+
+Before you get started, we're going to do this exercise as if you were
+starting from scratch.
+
+1.  In Rstudio, go to file, then select "new project". Choose "New
+    Project", then "New Directory", then save the new project in a place
+    that makes sense for you on your computer. Give the project a useful
+    name.
+2.  Create a folder for data and a folder for scripts
+3.  In your finder (mac) or file explorer (windows), copy the
+    "sound-production-treatment.csv" file from the data folder in the
+    2022 workshop folder to the data folder in your new project.
+4.  Create a new Rmarkdown script by going to file ---\> new file ---\>
+    Rmarkdown.
+5.  Change the title and author. Delete everything after the first code
+    chunk.
+6.  If you prefer, you can copy the remaining contents of this HTML
+    Document to your new R markdown file by opening the Rmarkdown
+    version of the file, and coping the content.
+
+## Part 1.
+
+For each question, save your code in the area provided below the
+question.
+
+**Q1.0 Load the tidyverse and here libraries and read in the
+"sound-production-treatment.csv" dataframe**
+
+```{r}
+library(tidyverse)
+library(here)
+df = read.csv(here("data", "sound-production-treatment.csv"), stringsAsFactors = TRUE)
+```
+
+**Q1.1 Print a summary of each variable in the data. What do you notice
+that might require further attention?**
+
+```{r}
+# Your code here
+summary(df)
+```
+
+**Q1.2 Remove any NA values from the data, saving the data as a new
+object**
+
+```{r}
+# filter for all resposne values that are not NA
+df_noNA <- df %>% 
+  filter(!is.na(response))
+
+# Another way of doing the same thing!
+df_noNA <- df %>%
+  drop_na(response)
+
+# This way drops too many rows!! Can you tell why?
+df_noNA_bad <- df %>%
+  drop_na()
+
+```
+
+**Q1.3 Use `group_by` and `summarize` to create a new data frame that
+reports on the mean accuracy of each participant for each session in the
+baseline, treatment, and follow-up phases for treated items in the
+blocked condition (use `filter` to include only these phases and items,
+and condition).**
+
+```{r}
+# Your code here
+df_summary <- df_noNA %>%
+  # filter for each of the aspects of the data we want. | is for or
+  filter(phase == "baseline" | phase == "treatment" | phase == "followup",
+         condition == "blocked",
+         itemType == "tx") %>%
+  group_by(participant, session) %>%
+  summarize(mean_accuracy = mean(response))
+
+```
+
+**Q1.3 bonus: How can you keep the `phase` variable in this summary
+data?**
+
+```{r}
+# Your code here
+df_summary <- df_noNA %>%
+  # filter for each of the aspects of the data we want. | is for or
+  filter(phase == "baseline" | phase == "treatment" | phase == "followup",
+         condition == "blocked",
+         itemType == "tx") %>%
+  # Including phase in the group_by doesn't change the grouping because session
+  # is more detailed than phase, (within participant, sessions are in the same phase)
+  # and it keeps phase in the dataset
+  group_by(participant, session, phase) %>%
+  summarize(mean_accuracy = mean(response))
+
+```
+
+**Q1.4. The following code prints out a value from the dataset. Below
+the code chunk, write a sentence that uses the value using inline R
+code.**
+
+```{r}
+P10_bl_all <- df %>%
+  # filter for participant 10, baseline phase, random condition, treated items
+  filter(participant == "P10",
+         phase == "baseline",
+         condition == "random",
+         itemType == "tx") %>%
+  # get the mean accuracy across all 
+  summarize(accuracy = mean(response)*100) %>%
+  pull(accuracy)
+
+# Write the following sentence below this chunk (in normal markdown text), but use inline R
+# code to insert the P10_bl_all object's value. 
+
+# Participant 10's baseline accuracy was ____%.
+  
+```
+
+Participant 10's baseline accuracy was `r P10_bl_all`%.
+
+**Q1.4 Pick one participant and plot their performance across all
+treatment phases.**
+
+-   use the shape aesthetic for treatment phase
+-   use the color aesthetic for item type
+-   Add facet_wrap(\~condition, ncol = 1) to the final line of your plot
+    to add a "facet" to plot the conditions separately.
+-   label the y axis "Percent Correct"
+-   Give the plot a title
+-   Change the plot theme
+-   Bonus: Change the colors used in the plot
+
+First, create the data we want to use:
+
+```{r}
+# Your code here
+df_p5 <- df_noNA %>%
+  filter(participant == "P5") %>%
+  group_by(phase, session, itemType, condition) %>%
+  summarize(mean_accuracy = mean(response)) 
+```
+
+Then, create the plot:
+
+```{r}
+df_p5 %>%
+  ggplot(aes(x = session, y = mean_accuracy, shape = phase, color = itemType)) +
+  geom_point() + 
+  geom_line() + 
+  facet_wrap(~condition, ncol = 1) +
+  labs(y = "Percent Correct",
+       title = "Participant 5's performance over time") +
+  theme_classic() + 
+  scale_color_manual(values = c("blue", "darkgreen"))
+  
+```
+
+## Part 2.
+
+**Hopefully by now you've gotten a sense of what kind of variables are
+in the data. In Part 2, we'd like you to explore some aspect of the data
+that you find interesting. Can you wrangle the data and create a plot to
+show the group that gets at a question you have about the data.**
+
+-   Comment your code clearly so that you can explain what your code
+    does
+
+-   If your code requires multiple steps, use multiple code chunks and
+    write a brief description of the goal of each chunk above it.
+
+```{r}
+# Your code here
+
+```

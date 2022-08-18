@@ -1,0 +1,61 @@
+---
+title: "Installation test script"
+subtitle: "This script should run and save a .html file with the output"
+author: "rob"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+## Install packages
+
+**This code will NOT run when the document is knitted. Tun this before knitting!!**
+
+```{r, eval = FALSE}
+install.packages("here")
+install.packages("tidyverse")
+install.packages("rmarkdown")
+install.packages("rmdformats")
+install.packages("palmerpenguins")
+```
+
+## Load packages
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+## Summary
+
+```{r cars}
+summary(mpg)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=TRUE}
+mpg %>%
+  filter(displ > 2) %>% 
+  ggplot(aes(x = displ, y = cty)) +
+  geom_point()
+```
+
+## Read in a dataset 
+
+```{r}
+test = read.csv(here("data", "penguins.csv"))
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
